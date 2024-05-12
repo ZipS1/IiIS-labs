@@ -9,4 +9,5 @@ class View:
         for i, row in enumerate(pixels):
             for j, pixel in enumerate(row):
                 self.img.putpixel((i, j), pixel)
+                
         self.img.show()
