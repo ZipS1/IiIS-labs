@@ -50,8 +50,9 @@ class Controller:
 
     def _evaluate_heat_map(self):
         for point in self.point_coords:
-            for t in np.arange(0, np.pi, 0.05):
-                x1, y1 = point
+            x1, y1 = point
+            evaluated = set()
+            for t in np.arange(-np.pi, np.pi/2, 0.03):
                 y_diff = int(np.sin(t) * POINT_POWER)
                 x_diff = int(np.cos(t) * POINT_POWER)
 
@@ -63,17 +64,18 @@ class Controller:
                             (x1 + i, y1 - j),
                             (x1 - i, y1 - j),
                         ):
-                            if x2 >= 0 and x2 < WIDTH and y2 >= 0 and y2 < HEIGHT:
+                            if x2 >= 0 and x2 < WIDTH and y2 >= 0 and y2 < HEIGHT and (x2, y2) not in evaluated:
                                 distance = self._get_distance(x1, y1, x2, y2)
                                 value = self.heat_map[y2][x2]
                                 if distance == 0:
                                     value = 1
                                 elif value < 1:
-                                    value += 1 - (distance / POINT_POWER) ** 0.01
+                                    value += 1 - (distance / POINT_POWER) ** 0.07
                                     if value > 1:
                                         value = 1
 
                                 self.heat_map[y2][x2] = value
+                                evaluated.add((x2, y2))
 
     def _adjust_map_with_heat_bound(self, heat_bound):
         for i, row in enumerate(self.heat_map):
