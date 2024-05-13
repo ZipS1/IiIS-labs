@@ -5,11 +5,18 @@
 на рисунке эта зона залита зеленым цветом.
 '''
 from Controller import Controller
+from pyinstrument import Profiler
 
 def main():
+    profiler = Profiler()
+    profiler.start()
+
     N = 100
     controller = Controller(N)
     controller.run()
+
+    profiler.stop()
+    profiler.open_in_browser()
 
 if __name__ == "__main__":
     main()

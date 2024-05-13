@@ -1,6 +1,6 @@
 from View import View
 from Model import Model
-from numpy import sin, cos, pi, arange
+import numpy as np
 
 WIDTH, HEIGHT = 600, 600
 EDGE_OFFSET = 20
@@ -26,6 +26,12 @@ class Controller:
         self.point_coords = self.model.get_point_coords()
 
         self._evaluate_heat_map()
+        with open("heat_map.txt", "w") as f:
+            for row in self.heat_map:
+                for val in row:
+                    f.write(str(val) + " ")
+                f.write("\n")
+                                
         self._adjust_map_with_heat_bound(HEAT_BOUND)
 
         for point in self.point_coords:
@@ -33,9 +39,9 @@ class Controller:
 
     def _set_point(self, x, y):
         self.pixels[y][x] = (255,0,0)
-        for t in arange(0, pi, 0.05):
-            y_diff = int(sin(t) * POINT_RADIUS)
-            x_diff = int(cos(t) * POINT_RADIUS)
+        for t in np.arange(0, np.pi, 0.05):
+            y_diff = int(np.sin(t) * POINT_RADIUS)
+            x_diff = int(np.cos(t) * POINT_RADIUS)
 
             for i in range(x_diff):
                 for j in range(y_diff):
@@ -46,20 +52,25 @@ class Controller:
 
     def _evaluate_heat_map(self):
         for point in self.point_coords:
-            for t in arange(0, pi, 0.05):
+            for t in np.arange(0, np.pi, 0.05):
                 x1, y1 = point
-                y_diff = int(sin(t) * POINT_POWER)
-                x_diff = int(cos(t) * POINT_POWER)
+                y_diff = int(np.sin(t) * POINT_POWER)
+                x_diff = int(np.cos(t) * POINT_POWER)
 
                 for i in range(x_diff):
                     for j in range(y_diff):
                         for x2, y2 in ((x1 + i, y1 + j), (x1 - i, y1 + j), (x1 + i, y1 - j), (x1 - i, y1 - j)):
                             if x2 >= 0 and x2 < WIDTH and y2 >= 0 and y2 < HEIGHT:
                                 distance = self._get_distance(x1, y1, x2, y2)
+                                value = self.heat_map[y2][x2]
                                 if distance == 0:
-                                    self.heat_map[y2][x2] = POINT_POWER
-                                else:
-                                    self.heat_map[y2][x2] += (3 * POINT_POWER**2) / (distance**4)
+                                    value = 1
+                                elif value < 1:
+                                    value += 1 - distance / POINT_POWER # (3 * POINT_POWER**2) / (distance**4)
+                                    if value > 1:
+                                        value = 1
+                                                                                                                                                
+                                self.heat_map[y2][x2] = value
     
     def _adjust_map_with_heat_bound(self, heat_bound):
         for i, row in enumerate(self.heat_map):
