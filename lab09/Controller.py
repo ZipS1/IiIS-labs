@@ -29,6 +29,9 @@ class Controller:
         self._evaluate_heat_map()
         self._adjust_map_with_heat_bound(HEAT_BOUND)
 
+        if DEBUG_SHOW_TOWER_RADIUS:
+            self._show_tower_radius()
+
         for point in self.point_coords:
             self._set_point(point[0], point[1])
 
@@ -80,3 +83,23 @@ class Controller:
 
     def _get_distance(self, x1, y1, x2, y2):
         return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+    
+    def _show_tower_radius(self):
+        for point in self.point_coords:
+            x, y = point
+            for t in np.arange(- np.pi, np.pi / 2, 0.05):
+                y_diff = int(np.sin(t) * POINT_POWER)
+                x_diff = int(np.cos(t) * POINT_POWER)
+                is_x_negative_in = (x - x_diff) >= 0
+                is_x_positive_in = (x + x_diff) < WIDTH
+                is_y_negative_in = (y - y_diff) >= 0
+                is_y_positive_in = (y + y_diff) < HEIGHT
+
+                if is_y_positive_in and is_x_positive_in:
+                    self.pixels[y + y_diff][x + x_diff] = (255, 255, 255)
+                if is_y_negative_in and is_x_positive_in and y_diff > 0:
+                    self.pixels[y - y_diff][x + x_diff] = (255, 255, 255)
+                if is_y_positive_in and is_x_negative_in and x_diff > 0:
+                    self.pixels[y + y_diff][x - x_diff] = (255, 255, 255)
+                if is_y_negative_in and is_x_positive_in and y_diff > 0:
+                    self.pixels[y - y_diff][x + x_diff] = (255, 255, 255)

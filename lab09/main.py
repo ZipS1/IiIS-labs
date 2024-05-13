@@ -9,7 +9,7 @@ from Controller import Controller
 
 
 def main():
-    N = 1
+    N = 100
     controller = Controller(N)
     controller.run()
 
