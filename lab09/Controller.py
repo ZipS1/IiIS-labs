@@ -7,6 +7,7 @@ EDGE_OFFSET = 20
 POINT_RADIUS = 5
 HEAT_BOUND = 0.1
 POINT_POWER = 50
+DEBUG_SHOW_TOWER_RADIUS = True #TODO
 
 class Controller:
     def __init__(self, N):
