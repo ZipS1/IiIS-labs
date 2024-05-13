@@ -7,7 +7,7 @@ EDGE_OFFSET = 20
 POINT_RADIUS = 5
 HEAT_BOUND = 0.1
 POINT_POWER = 50
-DEBUG_SHOW_TOWER_RADIUS = True  # TODO
+DEBUG_SHOW_TOWER_RADIUS = False
 
 
 class Controller:
@@ -69,7 +69,7 @@ class Controller:
                                 if distance == 0:
                                     value = 1
                                 elif value < 1:
-                                    value += 1 - distance / POINT_POWER
+                                    value += 1 - (distance / POINT_POWER) ** 0.01
                                     if value > 1:
                                         value = 1
 
@@ -87,7 +87,7 @@ class Controller:
     def _show_tower_radius(self):
         for point in self.point_coords:
             x, y = point
-            for t in np.arange(- np.pi, np.pi / 2, 0.05):
+            for t in np.arange(-np.pi, np.pi / 2, 0.03):
                 y_diff = int(np.sin(t) * POINT_POWER)
                 x_diff = int(np.cos(t) * POINT_POWER)
                 is_x_negative_in = (x - x_diff) >= 0
