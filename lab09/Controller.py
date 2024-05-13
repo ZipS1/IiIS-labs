@@ -55,7 +55,10 @@ class Controller:
                         for x2, y2 in ((x1 + i, y1 + j), (x1 - i, y1 + j), (x1 + i, y1 - j), (x1 - i, y1 - j)):
                             if x2 >= 0 and x2 < WIDTH and y2 >= 0 and y2 < HEIGHT:
                                 distance = self._get_distance(x1, y1, x2, y2)
-                                self.heat_map[y2][x2] += distance / (POINT_POWER)
+                                if distance == 0:
+                                    self.heat_map[y2][x2] = POINT_POWER
+                                else:
+                                    self.heat_map[y2][x2] += (3 * POINT_POWER**2) / (distance**4)
     
     def _adjust_map_with_heat_bound(self, heat_bound):
         for i, row in enumerate(self.heat_map):
